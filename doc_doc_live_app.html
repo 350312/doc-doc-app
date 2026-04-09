@@ -1,0 +1,357 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{max-width:430px;margin:0 auto;font-family:var(--font-sans);background:var(--color-background-tertiary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;overflow:hidden}
+.hdr{background:var(--color-background-primary);padding:16px 18px 14px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px}
+.hdr-logo{width:34px;height:34px;background:#1D9E75;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hdr h1{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.hdr p{font-size:12px;color:var(--color-text-secondary)}
+.screen{padding:16px;display:none}
+.screen.active{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:14px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.m-card{background:var(--color-background-secondary);border-radius:8px;padding:12px}
+.m-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.m-val{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.m-unit{font-size:11px;color:var(--color-text-secondary);font-weight:400}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px}
+.b-ok{background:#E1F5EE;color:#085041}
+.b-warn{background:#FAEEDA;color:#633806}
+.b-bad{background:#FCEBEB;color:#791F1F}
+.feel-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.feel-btn{padding:7px 13px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);font-size:13px;color:var(--color-text-primary);cursor:pointer}
+.feel-btn.on{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tag{padding:5px 11px;border-radius:20px;font-size:12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);cursor:pointer;background:var(--color-background-primary)}
+.tag.on{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
+.inp-row{display:flex;gap:8px;margin-bottom:8px}
+.inp-row input{flex:1;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:8px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.inp-row input::placeholder{color:var(--color-text-tertiary)}
+.btn-primary{width:100%;padding:11px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;margin-top:4px}
+.btn-primary:disabled{background:#9FE1CB;cursor:not-allowed}
+.ai-box{background:var(--color-background-secondary);border-radius:8px;padding:12px;margin-top:10px;font-size:13px;color:var(--color-text-primary);line-height:1.6;min-height:48px}
+.ai-box .thinking{color:var(--color-text-tertiary);font-size:12px}
+.ai-section{margin-top:10px}
+.ai-section h4{font-size:12px;font-weight:500;color:#085041;background:#E1F5EE;display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:6px}
+.ai-item{font-size:13px;color:var(--color-text-primary);padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary);line-height:1.5}
+.ai-item:last-child{border:none}
+.med-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.med-row:last-child{border:none}
+.med-ic{width:32px;height:32px;border-radius:8px;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.med-info{flex:1}
+.med-info b{font-size:13px;font-weight:500;color:var(--color-text-primary);display:block}
+.med-info span{font-size:11px;color:var(--color-text-secondary)}
+.med-time{font-size:11px;color:#085041;background:#E1F5EE;padding:3px 8px;border-radius:12px}
+.hist-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.hist-row:last-child{border:none}
+.hist-date{font-size:11px;color:var(--color-text-secondary);width:60px;flex-shrink:0}
+.hist-vals{flex:1;font-size:12px;color:var(--color-text-primary)}
+.hist-status{font-size:11px}
+.chat-msgs{max-height:320px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px}
+.msg{padding:9px 12px;border-radius:10px;font-size:13px;line-height:1.5;max-width:88%}
+.msg.user{background:#1D9E75;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px}
+.msg.doc{background:var(--color-background-secondary);color:var(--color-text-primary);align-self:flex-start;border-radius:10px 10px 10px 2px}
+.msg.thinking{background:var(--color-background-secondary);color:var(--color-text-tertiary);align-self:flex-start;font-size:12px}
+.chat-inp{display:flex;gap:8px}
+.chat-inp input{flex:1;padding:9px 12px;border:0.5px solid var(--color-border-secondary);border-radius:20px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.chat-inp button{padding:9px 16px;background:#1D9E75;color:#fff;border:none;border-radius:20px;font-size:13px;cursor:pointer}
+.nav{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:8px 0 4px}
+.nav-it{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.nav-ic{font-size:18px}
+.nav-lb{font-size:10px;color:var(--color-text-secondary)}
+.nav-it.on .nav-lb{color:#1D9E75;font-weight:500}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:#1D9E75;margin:0 auto;visibility:hidden}
+.nav-it.on .nav-dot{visibility:visible}
+.disclaimer{font-size:11px;color:var(--color-text-tertiary);text-align:center;margin-top:8px;padding:0 4px;line-height:1.5}
+</style>
+
+<h2 class="sr-only">Doc Doc — AI-powered personal health assistant app</h2>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-logo">🩺</div>
+    <div>
+      <h1>Doc Doc</h1>
+      <p>Your personal health assistant</p>
+    </div>
+  </div>
+
+  <div id="s-home" class="screen active">
+    <div style="padding:4px 0 12px">
+      <div style="font-size:16px;font-weight:500;color:var(--color-text-primary)">Good morning!</div>
+      <div style="font-size:12px;color:var(--color-text-secondary)">Here's your health summary</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="m-card"><div class="m-label">Blood pressure</div><div class="m-val">128<span class="m-unit">/84</span></div><span class="badge b-warn">Slightly high</span></div>
+      <div class="m-card"><div class="m-label">Cholesterol</div><div class="m-val">192<span class="m-unit"> mg/dL</span></div><span class="badge b-ok">Normal</span></div>
+      <div class="m-card"><div class="m-label">Blood sugar</div><div class="m-val">108<span class="m-unit"> mg/dL</span></div><span class="badge b-warn">Pre-diabetic</span></div>
+      <div class="m-card"><div class="m-label">Heart rate</div><div class="m-val">74<span class="m-unit"> bpm</span></div><span class="badge b-ok">Healthy</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Today's medicines</div>
+      <div class="med-row"><div class="med-ic">💊</div><div class="med-info"><b>Amlodipine 5mg</b><span>Blood pressure — 1 tablet</span></div><div class="med-time">8:00 AM</div></div>
+      <div class="med-row"><div class="med-ic">💊</div><div class="med-info"><b>Atorvastatin 10mg</b><span>Cholesterol — 1 tablet</span></div><div class="med-time">9:00 PM</div></div>
+    </div>
+    <div class="card" style="background:#E1F5EE;border-color:#5DCAA5">
+      <div style="font-size:13px;font-weight:500;color:#085041;margin-bottom:4px">Today's tip</div>
+      <div style="font-size:13px;color:#0F6E56;line-height:1.5">Your BP is slightly high. Reduce salt today, drink 8 glasses of water, and take a 20-min walk.</div>
+    </div>
+  </div>
+
+  <div id="s-check" class="screen">
+    <div class="card">
+      <div class="card-title">How do you feel right now?</div>
+      <div class="feel-row" id="feel-row">
+        <button class="feel-btn" onclick="pick(this,'feel')">Great</button>
+        <button class="feel-btn" onclick="pick(this,'feel')">Okay</button>
+        <button class="feel-btn" onclick="pick(this,'feel')">Tired</button>
+        <button class="feel-btn" onclick="pick(this,'feel')">Unwell</button>
+        <button class="feel-btn" onclick="pick(this,'feel')">In pain</button>
+      </div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Any symptoms?</div>
+      <div class="tags" id="sym-tags">
+        <span class="tag" onclick="this.classList.toggle('on')">Headache</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Fatigue</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Nausea</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Chest pain</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Dizziness</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Shortness of breath</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Back pain</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Fever</span>
+        <span class="tag" onclick="this.classList.toggle('on')">Joint pain</span>
+      </div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Add your readings (optional)</div>
+      <div class="inp-row">
+        <input id="bp-in" placeholder="BP e.g. 128/84" />
+        <input id="sugar-in" placeholder="Sugar mg/dL" />
+      </div>
+      <button class="btn-primary" id="analyze-btn" onclick="analyze()">Get AI health advice</button>
+      <div id="ai-result" class="ai-box" style="display:none"></div>
+      <p class="disclaimer">AI suggestions are for guidance only. Always consult a qualified doctor for medical decisions.</p>
+    </div>
+  </div>
+
+  <div id="s-meds" class="screen">
+    <div class="card">
+      <div class="card-title">My medicines</div>
+      <div class="med-row"><div class="med-ic">💊</div><div class="med-info"><b>Amlodipine 5mg</b><span>Blood pressure — once daily morning</span></div><span class="badge b-ok">Active</span></div>
+      <div class="med-row"><div class="med-ic">💊</div><div class="med-info"><b>Atorvastatin 10mg</b><span>Cholesterol — once nightly</span></div><span class="badge b-ok">Active</span></div>
+      <div class="med-row"><div class="med-ic">💊</div><div class="med-info"><b>Metformin 500mg</b><span>Blood sugar — twice daily with food</span></div><span class="badge b-warn">Review due</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Add a medicine</div>
+      <div class="inp-row"><input id="med-name" placeholder="Medicine name" /></div>
+      <div class="inp-row">
+        <input id="med-dose" placeholder="Dosage e.g. 10mg" />
+        <input id="med-time" placeholder="Time e.g. 8 AM" />
+      </div>
+      <button class="btn-primary" onclick="askMed()">Ask AI about this medicine ↗</button>
+      <div id="med-ai" class="ai-box" style="display:none"></div>
+      <p class="disclaimer">Never self-prescribe. Always follow your doctor's instructions.</p>
+    </div>
+  </div>
+
+  <div id="s-history" class="screen">
+    <div class="card">
+      <div class="card-title">Health log</div>
+      <div class="hist-row"><div class="hist-date">Apr 9</div><div class="hist-vals">BP 128/84 · Sugar 108 · HR 74</div><span class="badge b-warn">Fair</span></div>
+      <div class="hist-row"><div class="hist-date">Apr 8</div><div class="hist-vals">BP 132/88 · Sugar 112 · HR 78</div><span class="badge b-warn">Fair</span></div>
+      <div class="hist-row"><div class="hist-date">Apr 7</div><div class="hist-vals">BP 125/82 · Sugar 105 · HR 72</div><span class="badge b-ok">Good</span></div>
+      <div class="hist-row"><div class="hist-date">Apr 6</div><div class="hist-vals">BP 119/79 · Sugar 99 · HR 70</div><span class="badge b-ok">Good</span></div>
+      <div class="hist-row"><div class="hist-date">Apr 5</div><div class="hist-vals">BP 140/92 · Sugar 118 · HR 82</div><span class="badge b-bad">High</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Log today's reading</div>
+      <div class="inp-row">
+        <input id="log-bp" placeholder="Blood pressure" />
+        <input id="log-sugar" placeholder="Blood sugar" />
+      </div>
+      <div class="inp-row">
+        <input id="log-chol" placeholder="Cholesterol" />
+        <input id="log-hr" placeholder="Heart rate" />
+      </div>
+      <button class="btn-primary" onclick="logReading()">Save reading</button>
+      <div id="log-msg" style="display:none;font-size:13px;color:#085041;margin-top:8px;text-align:center"></div>
+    </div>
+  </div>
+
+  <div id="s-ask" class="screen">
+    <div class="card">
+      <div class="card-title">Ask Doc Doc</div>
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg doc">Hi! I'm your personal health assistant. Ask me anything about your health, symptoms, diet, or medicines.</div>
+      </div>
+      <div class="chat-inp">
+        <input id="chat-in" placeholder="Ask a health question..." onkeydown="if(event.key==='Enter')sendChat()" />
+        <button onclick="sendChat()">Send</button>
+      </div>
+      <p class="disclaimer">AI responses are for educational purposes only. Not a substitute for professional medical advice.</p>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-it on" onclick="goTo('home',this)"><div class="nav-ic">🏠</div><div class="nav-lb">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-it" onclick="goTo('check',this)"><div class="nav-ic">🩺</div><div class="nav-lb">Check-in</div><div class="nav-dot"></div></div>
+    <div class="nav-it" onclick="goTo('meds',this)"><div class="nav-ic">💊</div><div class="nav-lb">Medicines</div><div class="nav-dot"></div></div>
+    <div class="nav-it" onclick="goTo('history',this)"><div class="nav-ic">📊</div><div class="nav-lb">History</div><div class="nav-dot"></div></div>
+    <div class="nav-it" onclick="goTo('ask',this)"><div class="nav-ic">💬</div><div class="nav-lb">Ask Doc</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<script>
+function goTo(id, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-it').forEach(n => n.classList.remove('on'));
+  document.getElementById('s-' + id).classList.add('active');
+  el.classList.add('on');
+}
+function pick(btn, group) {
+  document.querySelectorAll('#feel-row .feel-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+async function callClaude(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: `You are Doc Doc, a friendly AI health assistant. Give practical, concise health advice. 
+Format your response in clearly labeled sections using these exact headers on their own lines:
+DIET ADVICE:
+LIFESTYLE:
+MEDICINE NOTE:
+Keep each section to 2-3 short bullet points using • character. Be warm and supportive. 
+Always end with a brief reminder to consult a real doctor for serious concerns.`,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const d = await res.json();
+  return d.content.map(c => c.text || '').join('');
+}
+async function callClaudeChat(msgs) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: `You are Doc Doc, a friendly AI health assistant. Answer health questions clearly and helpfully in 3-5 sentences. Be warm, practical, and always recommend consulting a doctor for serious issues.`,
+      messages: msgs
+    })
+  });
+  const d = await res.json();
+  return d.content.map(c => c.text || '').join('');
+}
+async function analyze() {
+  const feel = document.querySelector('#feel-row .feel-btn.on')?.textContent || 'not specified';
+  const syms = [...document.querySelectorAll('#sym-tags .tag.on')].map(t => t.textContent).join(', ') || 'none';
+  const bp = document.getElementById('bp-in').value;
+  const sugar = document.getElementById('sugar-in').value;
+  const btn = document.getElementById('analyze-btn');
+  const box = document.getElementById('ai-result');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing...';
+  box.style.display = 'block';
+  box.innerHTML = '<span class="thinking">Doc Doc is thinking...</span>';
+  const prompt = `Patient check-in:
+- Feeling: ${feel}
+- Symptoms: ${syms}
+- Blood pressure: ${bp || '128/84 (on file)'}
+- Blood sugar: ${sugar || '108 mg/dL (on file)'}
+- Known conditions: slightly high BP, pre-diabetic, high cholesterol history
+Please provide health advice for today.`;
+  try {
+    const text = await callClaude(prompt);
+    box.innerHTML = formatAI(text);
+  } catch(e) {
+    box.innerHTML = '<span style="color:var(--color-text-danger)">Could not connect. Please try again.</span>';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Get AI health advice';
+}
+async function askMed() {
+  const name = document.getElementById('med-name').value.trim();
+  const dose = document.getElementById('med-dose').value.trim();
+  if (!name) { alert('Please enter a medicine name first.'); return; }
+  const box = document.getElementById('med-ai');
+  box.style.display = 'block';
+  box.innerHTML = '<span class="thinking">Looking up medicine info...</span>';
+  const prompt = `Tell me about the medicine: ${name} ${dose}. What is it for, how should it be taken, common side effects, and any important warnings? Keep it brief and practical.`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are a helpful health assistant. Give clear, brief medicine information in 4-5 sentences. Always advise consulting a doctor.',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const d = await res.json();
+    box.innerHTML = '<div style="font-size:13px;line-height:1.6;color:var(--color-text-primary)">' + (d.content[0]?.text || 'No info found.') + '</div>';
+  } catch(e) {
+    box.innerHTML = 'Could not fetch info. Try again.';
+  }
+}
+const chatHistory = [];
+async function sendChat() {
+  const inp = document.getElementById('chat-in');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="msg user">${txt}</div>`;
+  msgs.innerHTML += `<div class="msg thinking" id="thinking-msg">Doc is thinking...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  chatHistory.push({ role: 'user', content: txt });
+  try {
+    const reply = await callClaudeChat(chatHistory);
+    document.getElementById('thinking-msg').remove();
+    msgs.innerHTML += `<div class="msg doc">${reply}</div>`;
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    document.getElementById('thinking-msg').remove();
+    msgs.innerHTML += `<div class="msg doc">Sorry, I couldn't connect. Please try again.</div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function logReading() {
+  const bp = document.getElementById('log-bp').value;
+  const sugar = document.getElementById('log-sugar').value;
+  const msg = document.getElementById('log-msg');
+  if (!bp && !sugar) { alert('Please enter at least one reading.'); return; }
+  msg.style.display = 'block';
+  msg.textContent = 'Reading saved! Keep tracking daily for best results.';
+  document.getElementById('log-bp').value = '';
+  document.getElementById('log-sugar').value = '';
+  document.getElementById('log-chol').value = '';
+  document.getElementById('log-hr').value = '';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+function formatAI(text) {
+  const sections = { 'DIET ADVICE:': [], 'LIFESTYLE:': [], 'MEDICINE NOTE:': [] };
+  let current = null;
+  text.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (sections.hasOwnProperty(trimmed)) { current = trimmed; }
+    else if (current && trimmed.startsWith('•')) { sections[current].push(trimmed); }
+  });
+  let html = '';
+  const labels = { 'DIET ADVICE:': 'Diet advice', 'LIFESTYLE:': 'Lifestyle', 'MEDICINE NOTE:': 'Medicine note' };
+  for (const [key, items] of Object.entries(sections)) {
+    if (items.length) {
+      html += `<div class="ai-section"><h4>${labels[key]}</h4>`;
+      items.forEach(i => html += `<div class="ai-item">${i}</div>`);
+      html += '</div>';
+    }
+  }
+  if (!html) {
+    html = `<div style="font-size:13px;line-height:1.6;color:var(--color-text-primary)">${text}</div>`;
+  }
+  const reminder = text.split('\n').find(l => l.toLowerCase().includes('consult') || l.toLowerCase().includes('doctor'));
+  if (reminder) html += `<div style="font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.5">${reminder.trim()}</div>`;
+  return html;
+}
+</script>
