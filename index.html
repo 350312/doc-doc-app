@@ -393,16 +393,25 @@ const SYS_MED = `You are Doc Doc, a knowledgeable AI health assistant. Provide c
 const SYS_CHAT = `You are Doc Doc, a warm and caring AI health assistant. Answer health questions clearly and helpfully in 3-6 sentences. Be practical and supportive. Always recommend seeing a real doctor for urgent or serious concerns.`;
 
 async function apiCall(system, messages) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
+  const r = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: system,
-      messages: messages
-    })
+    body: JSON.stringify({ system, messages })
   });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error || 'Server error ' + r.status);
+  }
+  const d = await r.json();
+  return d.text;
+}
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error || 'Server error ' + r.status);
+  }
+  const d = await r.json();
+  return d.text;
+};
   if (!r.ok) {
     const err = await r.json().catch(() => ({}));
     throw new Error(err.error?.message || 'API error ' + r.status);
