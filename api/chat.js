@@ -9,11 +9,6 @@ export default async function handler(req, res) {
   try {
     const { system, messages } = req.body;
 
-    if (!system || !messages) {
-      return res.status(400).json({ error: 'Missing system or messages' });
-    }
-
-    // Convert to Gemini/OpenAI format
     const geminiMessages = [
       { role: 'system', content: system },
       ...messages.map(m => ({
@@ -37,11 +32,6 @@ export default async function handler(req, res) {
         })
       }
     );
-
-    if (!response.ok) {
-      const err = await response.json();
-      return res.status(response.status).json({ error: err.error?.message || 'Gemini API error' });
-    }
 
     const data = await response.json();
     const text = data.choices?.[0]?.message?.content || '';
