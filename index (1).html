@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Doc Doc – Health Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --md-primary: #006A4E;
+  --md-primary-container: #89F8D1;
+  --md-on-primary: #ffffff;
+  --md-on-primary-container: #002117;
+  --md-secondary: #4C6359;
+  --md-secondary-container: #CFE9DC;
+  --md-surface: #F4FBF7;
+  --md-surface-variant: #DBE5DF;
+  --md-surface-container: #E8F2EC;
+  --md-on-surface: #161D1A;
+  --md-on-surface-variant: #3F4945;
+  --md-outline: #6F7972;
+  --md-outline-variant: #BFC9C3;
+  --md-error: #BA1A1A;
+  --md-error-container: #FFDAD6;
+  --md-warning: #7A5900;
+  --md-warning-container: #FFDF99;
+  --md-success: #1A6B38;
+  --md-success-container: #B8F0CB;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --font-display: 'Google Sans Display', 'Google Sans', sans-serif;
+  --font-body: 'Google Sans', sans-serif;
+  --font-label: 'Roboto', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: #101418; display: flex; align-items: center; justify-content: center; font-family: var(--font-body); }
+
+.device {
+  width: 390px; height: 844px;
+  background: var(--md-surface);
+  border-radius: 44px; overflow: hidden;
+  position: relative; display: flex; flex-direction: column;
+  box-shadow: 0 0 0 10px #1a1f25, 0 0 0 11px #2a2f35, 0 40px 100px rgba(0,0,0,.8);
+}
+
+.status-bar {
+  background: var(--md-surface);
+  padding: 14px 28px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0; height: 44px;
+}
+.status-time { font-family: var(--font-label); font-size: 15px; font-weight: 500; color: var(--md-on-surface); }
+.status-icons { display: flex; gap: 5px; align-items: center; font-size: 13px; }
+
+.app-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+
+.screen { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
+.screen.active { display: flex; }
+.scroll-area { flex: 1; overflow-y: auto; }
+.scroll-area::-webkit-scrollbar { display: none; }
+
+.top-bar {
+  background: var(--md-surface); padding: 10px 16px 12px;
+  flex-shrink: 0; display: flex; align-items: center; gap: 12px;
+}
+.top-bar-title h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--md-on-surface); }
+.top-bar-title p { font-size: 12px; color: var(--md-on-surface-variant); margin-top: 1px; font-family: var(--font-label); }
+.top-bar-space { flex: 1; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--md-primary-container); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500; color: var(--md-on-primary-container); cursor: pointer; flex-shrink: 0; font-family: var(--font-label); }
+
+.hero { margin: 6px 16px 0; background: var(--md-primary); border-radius: var(--radius-xl); padding: 20px 22px; color: #fff; flex-shrink: 0; }
+.hero-g { font-size: 13px; opacity: .85; margin-bottom: 3px; font-family: var(--font-label); }
+.hero-n { font-family: var(--font-display); font-size: 24px; font-weight: 500; margin-bottom: 16px; }
+.hero-row { display: flex; gap: 10px; }
+.hm { flex: 1; background: rgba(255,255,255,.15); border-radius: var(--radius-md); padding: 10px 12px; }
+.hm-v { font-size: 17px; font-weight: 500; font-family: var(--font-display); }
+.hm-l { font-size: 10px; opacity: .8; margin-top: 2px; font-family: var(--font-label); }
+.hm-b { font-size: 10px; margin-top: 5px; background: rgba(255,255,255,.22); padding: 2px 7px; border-radius: 20px; display: inline-block; font-family: var(--font-label); }
+
+.sh { padding: 18px 16px 8px; display: flex; justify-content: space-between; align-items: center; }
+.sh-t { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--md-on-surface); }
+.sh-a { font-size: 13px; color: var(--md-primary); font-weight: 500; cursor: pointer; font-family: var(--font-label); }
+
+.mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+.mc { background: var(--md-surface-container); border-radius: var(--radius-lg); padding: 14px; cursor: pointer; transition: transform .12s; }
+.mc:active { transform: scale(.97); }
+.mc-ico { font-size: 20px; margin-bottom: 8px; }
+.mc-lbl { font-size: 11px; color: var(--md-on-surface-variant); margin-bottom: 3px; font-family: var(--font-label); }
+.mc-val { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--md-on-surface); }
+.mc-u { font-size: 11px; color: var(--md-on-surface-variant); }
+.badge { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 20px; margin-top: 6px; font-family: var(--font-label); }
+.b-ok { background: var(--md-success-container); color: var(--md-success); }
+.b-warn { background: var(--md-warning-container); color: var(--md-warning); }
+.b-bad { background: var(--md-error-container); color: var(--md-error); }
+
+.card { background: var(--md-surface-container); border-radius: var(--radius-lg); margin: 0 16px 12px; overflow: hidden; }
+.card-body { padding: 4px 16px 8px; }
+
+.mr { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--md-outline-variant); }
+.mr:last-child { border: none; padding-bottom: 2px; }
+.mr-ico { width: 40px; height: 40px; border-radius: 50%; background: var(--md-secondary-container); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.mr-info { flex: 1; }
+.mr-name { font-size: 14px; font-weight: 500; color: var(--md-on-surface); font-family: var(--font-label); }
+.mr-sub { font-size: 12px; color: var(--md-on-surface-variant); margin-top: 1px; font-family: var(--font-label); }
+
+.bnav { background: var(--md-surface-container); border-top: 1px solid var(--md-outline-variant); display: flex; padding: 8px 0 22px; flex-shrink: 0; }
+.ni { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+.ni-ind { width: 64px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+.ni.active .ni-ind { background: var(--md-secondary-container); }
+.ni-ico { font-size: 20px; }
+.ni-lbl { font-size: 11px; color: var(--md-on-surface-variant); font-family: var(--font-label); transition: color .15s; }
+.ni.active .ni-lbl { color: var(--md-primary); font-weight: 500; }
+
+.ci-sec { padding: 0 16px 14px; }
+.ci-lbl { font-size: 13px; color: var(--md-on-surface-variant); margin-bottom: 10px; font-family: var(--font-label); }
+.feel-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.fc { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--md-outline-variant); background: var(--md-surface); font-size: 13px; color: var(--md-on-surface-variant); cursor: pointer; font-family: var(--font-label); transition: all .12s; }
+.fc.on { background: var(--md-primary-container); border-color: var(--md-primary); color: var(--md-on-primary-container); font-weight: 500; }
+.sym-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.sc { padding: 7px 13px; border-radius: 8px; border: 1px solid var(--md-outline-variant); background: var(--md-surface); font-size: 12px; color: var(--md-on-surface-variant); cursor: pointer; font-family: var(--font-label); transition: all .12s; }
+.sc.on { background: var(--md-secondary-container); border-color: var(--md-secondary); color: var(--md-on-surface); }
+
+.tf { margin-bottom: 12px; }
+.tf label { display: block; font-size: 12px; color: var(--md-primary); margin-bottom: 4px; font-family: var(--font-label); font-weight: 500; }
+.tf input, .tf textarea { width: 100%; padding: 11px 14px; background: var(--md-surface-container); border: 1px solid var(--md-outline-variant); border-radius: var(--radius-sm); font-size: 14px; color: var(--md-on-surface); font-family: var(--font-body); outline: none; resize: none; transition: border-color .15s; }
+.tf input:focus, .tf textarea:focus { border-color: var(--md-primary); }
+.tf textarea { min-height: 70px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn-p { width: 100%; padding: 14px; background: var(--md-primary); color: var(--md-on-primary); border: none; border-radius: var(--radius-xl); font-size: 14px; font-weight: 500; font-family: var(--font-body); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; margin-top: 4px; }
+.btn-p:active { transform: scale(.98); }
+.btn-p:disabled { opacity: .5; cursor: not-allowed; }
+
+.acard { background: var(--md-surface); border: 1px solid var(--md-outline-variant); border-radius: var(--radius-lg); overflow: hidden; margin-top: 14px; }
+.acard-hdr { background: var(--md-primary-container); padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+.acard-hdr span { font-size: 13px; font-weight: 500; color: var(--md-on-primary-container); font-family: var(--font-label); }
+.acard-body { padding: 14px; }
+.a-sec { margin-bottom: 14px; }
+.a-sec:last-child { margin-bottom: 0; }
+.a-sec-t { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .8px; color: var(--md-primary); margin-bottom: 8px; font-family: var(--font-label); }
+.a-item { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--md-on-surface); line-height: 1.5; padding: 4px 0; font-family: var(--font-label); }
+.a-item::before { content: '•'; color: var(--md-primary); font-weight: 700; flex-shrink: 0; }
+.a-disc { font-size: 11px; color: var(--md-on-surface-variant); line-height: 1.5; padding: 10px 14px; border-top: 1px solid var(--md-outline-variant); font-family: var(--font-label); }
+.a-think { padding: 16px 14px; text-align: center; font-size: 13px; color: var(--md-on-surface-variant); font-family: var(--font-label); display: flex; align-items: center; justify-content: center; gap: 10px; }
+.spin { width: 18px; height: 18px; border: 2px solid var(--md-outline-variant); border-top-color: var(--md-primary); border-radius: 50%; animation: sp .8s linear infinite; flex-shrink: 0; }
+@keyframes sp { to { transform: rotate(360deg); } }
+
+.hi { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--md-outline-variant); }
+.hi:last-child { border: none; }
+.hi-date { width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--md-secondary-container); flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hi-day { font-size: 16px; font-weight: 500; color: var(--md-on-surface); line-height: 1; font-family: var(--font-display); }
+.hi-mon { font-size: 10px; color: var(--md-on-surface-variant); font-family: var(--font-label); }
+.hi-data { flex: 1; }
+.hi-vals { font-size: 13px; color: var(--md-on-surface); font-family: var(--font-label); line-height: 1.7; }
+.hi-sub { font-size: 11px; color: var(--md-on-surface-variant); font-family: var(--font-label); }
+
+.chat-w { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+.chat-msgs { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.chat-msgs::-webkit-scrollbar { display: none; }
+.cb { max-width: 83%; padding: 10px 14px; font-size: 14px; line-height: 1.5; font-family: var(--font-label); border-radius: 18px; }
+.cb.u { background: var(--md-primary); color: #fff; align-self: flex-end; border-radius: 18px 18px 4px 18px; }
+.cb.d { background: var(--md-surface-container); color: var(--md-on-surface); align-self: flex-start; border-radius: 18px 18px 18px 4px; }
+.cb.t { background: var(--md-surface-container); color: var(--md-on-surface-variant); align-self: flex-start; border-radius: 18px 18px 18px 4px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.chat-bar { padding: 10px 12px 12px; background: var(--md-surface-container); border-top: 1px solid var(--md-outline-variant); display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.chat-bar input { flex: 1; padding: 11px 16px; background: var(--md-surface); border: 1px solid var(--md-outline-variant); border-radius: 24px; font-size: 14px; color: var(--md-on-surface); font-family: var(--font-body); outline: none; transition: border-color .15s; }
+.chat-bar input:focus { border-color: var(--md-primary); }
+.send-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--md-primary); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform .1s; }
+.send-btn:active { transform: scale(.9); }
+
+.snack { position: absolute; bottom: 86px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-family: var(--font-label); white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 100; }
+.snack.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">📶 🔋</div>
+  </div>
+
+  <div class="app-body">
+    <!-- HOME -->
+    <div id="s-home" class="screen active">
+      <div class="top-bar">
+        <div class="top-bar-title"><h2>Doc Doc</h2><p>Your health companion</p></div>
+        <div class="top-bar-space"></div>
+        <div class="avatar">R</div>
+      </div>
+      <div class="scroll-area">
+        <div class="hero">
+          <div class="hero-g">Good morning, Rakib 👋</div>
+          <div class="hero-n">Your daily summary</div>
+          <div class="hero-row">
+            <div class="hm"><div class="hm-v">128/84</div><div class="hm-l">Blood pressure</div><div class="hm-b">⚠ High</div></div>
+            <div class="hm"><div class="hm-v">108</div><div class="hm-l">Blood sugar</div><div class="hm-b">⚠ Watch</div></div>
+            <div class="hm"><div class="hm-v">74</div><div class="hm-l">Heart rate</div><div class="hm-b">✓ Good</div></div>
+          </div>
+        </div>
+        <div class="sh"><span class="sh-t">Health metrics</span><span class="sh-a" onclick="goTo('history')">See all</span></div>
+        <div class="mgrid">
+          <div class="mc"><div class="mc-ico">❤️</div><div class="mc-lbl">Blood pressure</div><div class="mc-val">128<span class="mc-u">/84</span></div><span class="badge b-warn">⚠ Slightly high</span></div>
+          <div class="mc"><div class="mc-ico">🩸</div><div class="mc-lbl">Cholesterol</div><div class="mc-val">192<span class="mc-u"> mg/dL</span></div><span class="badge b-ok">✓ Normal</span></div>
+          <div class="mc"><div class="mc-ico">🍬</div><div class="mc-lbl">Blood sugar</div><div class="mc-val">108<span class="mc-u"> mg/dL</span></div><span class="badge b-warn">⚠ Pre-diabetic</span></div>
+          <div class="mc"><div class="mc-ico">💓</div><div class="mc-lbl">Heart rate</div><div class="mc-val">74<span class="mc-u"> bpm</span></div><span class="badge b-ok">✓ Healthy</span></div>
+        </div>
+        <div class="sh" style="margin-top:8px"><span class="sh-t">Today's medicines</span><span class="sh-a" onclick="goTo('meds')">Manage</span></div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-body">
+            <div class="mr"><div class="mr-ico">💊</div><div class="mr-info"><div class="mr-name">Amlodipine 5mg</div><div class="mr-sub">Blood pressure · Morning</div></div><span class="badge b-ok">8 AM</span></div>
+            <div class="mr"><div class="mr-ico">💊</div><div class="mr-info"><div class="mr-name">Atorvastatin 10mg</div><div class="mr-sub">Cholesterol · Night</div></div><span class="badge b-warn">9 PM</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECK-IN -->
+    <div id="s-check" class="screen">
+      <div class="top-bar">
+        <div class="top-bar-title"><h2>Health check-in</h2><p>Tell me how you feel</p></div>
+      </div>
+      <div class="scroll-area">
+        <div style="padding-bottom:24px">
+          <div class="ci-sec">
+            <div class="ci-lbl">How are you feeling today?</div>
+            <div class="feel-row" id="feel-chips">
+              <div class="fc" onclick="selFeel(this)">😄 Great</div>
+              <div class="fc" onclick="selFeel(this)">😐 Okay</div>
+              <div class="fc" onclick="selFeel(this)">😴 Tired</div>
+              <div class="fc" onclick="selFeel(this)">😷 Unwell</div>
+              <div class="fc" onclick="selFeel(this)">😣 In pain</div>
+            </div>
+          </div>
+          <div class="ci-sec">
+            <div class="ci-lbl">Any symptoms? (tap all that apply)</div>
+            <div class="sym-row" id="sym-chips">
+              <div class="sc" onclick="this.classList.toggle('on')">Headache</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Fatigue</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Nausea</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Chest pain</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Dizziness</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Breathlessness</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Back pain</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Fever</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Blurred vision</div>
+              <div class="sc" onclick="this.classList.toggle('on')">Swollen legs</div>
+            </div>
+          </div>
+          <div class="ci-sec">
+            <div class="ci-lbl">Add your readings (optional)</div>
+            <div class="two">
+              <div class="tf"><label>Blood pressure</label><input id="ci-bp" placeholder="e.g. 128/84"/></div>
+              <div class="tf"><label>Blood sugar</label><input id="ci-sugar" placeholder="mg/dL"/></div>
+              <div class="tf"><label>Cholesterol</label><input id="ci-chol" placeholder="mg/dL"/></div>
+              <div class="tf"><label>Heart rate</label><input id="ci-hr" placeholder="bpm"/></div>
+            </div>
+            <div class="tf"><label>Anything else?</label><textarea id="ci-extra" placeholder="Other symptoms, concerns, context..."></textarea></div>
+            <button class="btn-p" id="analyze-btn" onclick="doAnalyze()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              Get AI health advice
+            </button>
+            <div id="ai-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDICINES -->
+    <div id="s-meds" class="screen">
+      <div class="top-bar">
+        <div class="top-bar-title"><h2>Medicines</h2><p>Prescriptions & info</p></div>
+      </div>
+      <div class="scroll-area">
+        <div class="sh" style="padding-top:10px"><span class="sh-t">Current prescriptions</span></div>
+        <div class="card">
+          <div class="card-body">
+            <div class="mr"><div class="mr-ico">💊</div><div class="mr-info"><div class="mr-name">Amlodipine 5mg</div><div class="mr-sub">Blood pressure · Once daily morning</div></div><span class="badge b-ok">Active</span></div>
+            <div class="mr"><div class="mr-ico">💊</div><div class="mr-info"><div class="mr-name">Atorvastatin 10mg</div><div class="mr-sub">Cholesterol · Once nightly</div></div><span class="badge b-ok">Active</span></div>
+            <div class="mr"><div class="mr-ico">💊</div><div class="mr-info"><div class="mr-name">Metformin 500mg</div><div class="mr-sub">Blood sugar · Twice daily with food</div></div><span class="badge b-warn">Review due</span></div>
+          </div>
+        </div>
+        <div class="sh"><span class="sh-t">Ask about a medicine</span></div>
+        <div style="padding: 0 16px 24px">
+          <div class="tf"><label>Medicine name</label><input id="med-name" placeholder="e.g. Paracetamol 500mg"/></div>
+          <div class="tf"><label>Your question</label><textarea id="med-q" placeholder="What is it for? Side effects? Can I take it with food?"></textarea></div>
+          <button class="btn-p" id="med-btn" onclick="askMed()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            Ask Doc Doc
+          </button>
+          <div id="med-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="s-history" class="screen">
+      <div class="top-bar">
+        <div class="top-bar-title"><h2>Health history</h2><p>Track your progress</p></div>
+      </div>
+      <div class="scroll-area">
+        <div class="sh" style="padding-top:10px"><span class="sh-t">Recent readings</span></div>
+        <div class="card" id="hist-list">
+          <div class="hi"><div class="hi-date"><span class="hi-day">09</span><span class="hi-mon">Apr</span></div><div class="hi-data"><div class="hi-vals">BP: 128/84 · Sugar: 108 · HR: 74</div><div class="hi-sub">Cholesterol: 192 mg/dL</div></div><span class="badge b-warn">Fair</span></div>
+          <div class="hi"><div class="hi-date"><span class="hi-day">08</span><span class="hi-mon">Apr</span></div><div class="hi-data"><div class="hi-vals">BP: 132/88 · Sugar: 112 · HR: 78</div><div class="hi-sub">Cholesterol: 198 mg/dL</div></div><span class="badge b-warn">Fair</span></div>
+          <div class="hi"><div class="hi-date"><span class="hi-day">07</span><span class="hi-mon">Apr</span></div><div class="hi-data"><div class="hi-vals">BP: 125/82 · Sugar: 105 · HR: 72</div><div class="hi-sub">Cholesterol: 190 mg/dL</div></div><span class="badge b-ok">Good</span></div>
+          <div class="hi"><div class="hi-date"><span class="hi-day">05</span><span class="hi-mon">Apr</span></div><div class="hi-data"><div class="hi-vals">BP: 140/92 · Sugar: 118 · HR: 82</div><div class="hi-sub">Cholesterol: 205 mg/dL</div></div><span class="badge b-bad">High</span></div>
+        </div>
+        <div class="sh"><span class="sh-t">Log a reading</span></div>
+        <div style="padding: 0 16px 24px">
+          <div class="two">
+            <div class="tf"><label>Blood pressure</label><input id="log-bp" placeholder="e.g. 128/84"/></div>
+            <div class="tf"><label>Blood sugar</label><input id="log-sugar" placeholder="mg/dL"/></div>
+            <div class="tf"><label>Cholesterol</label><input id="log-chol" placeholder="mg/dL"/></div>
+            <div class="tf"><label>Heart rate</label><input id="log-hr" placeholder="bpm"/></div>
+          </div>
+          <button class="btn-p" onclick="logReading()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+            Save reading
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div id="s-ask" class="screen">
+      <div class="top-bar">
+        <div class="top-bar-title"><h2>Ask Doc Doc</h2><p>AI health assistant</p></div>
+        <div class="top-bar-space"></div>
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--md-primary-container);display:flex;align-items:center;justify-content:center;font-size:20px">🩺</div>
+      </div>
+      <div class="chat-w">
+        <div class="chat-msgs" id="chat-msgs">
+          <div class="cb d">Hi! I'm Doc Doc 🩺 Ask me anything about your health — symptoms, diet, medicines, or readings.</div>
+          <div class="cb d">I give AI-powered guidance, but always confirm serious concerns with your real doctor.</div>
+        </div>
+        <div class="chat-bar">
+          <input id="chat-in" placeholder="Ask a health question..."/>
+          <button class="send-btn" onclick="sendChat()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni active" id="nav-home" onclick="goTo('home')"><div class="ni-ind"><span class="ni-ico">🏠</span></div><span class="ni-lbl">Home</span></div>
+    <div class="ni" id="nav-check" onclick="goTo('check')"><div class="ni-ind"><span class="ni-ico">🩺</span></div><span class="ni-lbl">Check-in</span></div>
+    <div class="ni" id="nav-meds" onclick="goTo('meds')"><div class="ni-ind"><span class="ni-ico">💊</span></div><span class="ni-lbl">Medicines</span></div>
+    <div class="ni" id="nav-history" onclick="goTo('history')"><div class="ni-ind"><span class="ni-ico">📊</span></div><span class="ni-lbl">History</span></div>
+    <div class="ni" id="nav-ask" onclick="goTo('ask')"><div class="ni-ind"><span class="ni-ico">💬</span></div><span class="ni-lbl">Ask Doc</span></div>
+  </div>
+  <div class="snack" id="snack"></div>
+</div>
+
+<script>
+const SYS_CHECKIN = `You are Doc Doc, a caring AI health assistant. Given a patient's check-in data, provide warm and practical advice.
+
+Respond using EXACTLY this format with these section headers:
+
+DIET ADVICE:
+• (advice item)
+• (advice item)
+• (advice item)
+
+LIFESTYLE:
+• (advice item)
+• (advice item)
+• (advice item)
+
+MEDICINE NOTE:
+• (advice item)
+• (advice item)
+
+Note: (one sentence reminder to consult a real doctor)
+
+Use the bullet character •. Keep each bullet concise (1-2 sentences). Be specific to their reported symptoms and readings.`;
+
+const SYS_MED = `You are Doc Doc, a knowledgeable AI health assistant. Provide clear information about medicines: what it treats, dosage guidance, common side effects, and key warnings. Keep the response to 4-5 sentences. Always advise verifying with a doctor or pharmacist.`;
+
+const SYS_CHAT = `You are Doc Doc, a warm and caring AI health assistant. Answer health questions clearly and helpfully in 3-6 sentences. Be practical and supportive. Always recommend seeing a real doctor for urgent or serious concerns.`;
+
+async function apiCall(system, messages) {
+  const r = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system, messages })
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error || 'Server error ' + r.status);
+  }
+  const d = await r.json();
+  return d.text;
+}
+
+function parseCheckin(text) {
+  const secs = { 'DIET ADVICE:': [], 'LIFESTYLE:': [], 'MEDICINE NOTE:': [] };
+  let cur = null, note = '';
+  text.split('\n').forEach(line => {
+    const t = line.trim();
+    if (!t) return;
+    if (secs.hasOwnProperty(t)) { cur = t; return; }
+    if (/^note:/i.test(t)) { note = t.replace(/^note:\s*/i, ''); cur = null; return; }
+    if (cur && /^[•\-\*]/.test(t)) secs[cur].push(t.replace(/^[•\-\*]\s*/, ''));
+  });
+  const lbls = { 'DIET ADVICE:': 'Diet advice', 'LIFESTYLE:': 'Lifestyle tips', 'MEDICINE NOTE:': 'Medicine note' };
+  let html = '<div class="acard"><div class="acard-hdr"><span>🩺</span><span>Doc Doc\'s advice</span></div><div class="acard-body">';
+  let hasContent = false;
+  for (const [k, items] of Object.entries(secs)) {
+    if (items.length) {
+      hasContent = true;
+      html += `<div class="a-sec"><div class="a-sec-t">${lbls[k]}</div>`;
+      items.forEach(i => html += `<div class="a-item">${i}</div>`);
+      html += '</div>';
+    }
+  }
+  if (!hasContent) html += `<div style="font-size:13px;line-height:1.6;color:var(--md-on-surface);font-family:var(--font-label)">${text}</div>`;
+  html += '</div>';
+  html += `<div class="a-disc">⚠ ${note || 'This is AI guidance only. Always consult a qualified doctor for medical decisions.'}</div>`;
+  html += '</div>';
+  return html;
+}
+
+async function doAnalyze() {
+  const feel = document.querySelector('#feel-chips .fc.on')?.textContent?.replace(/[^\w\s]/g,'').trim() || 'not specified';
+  const syms = [...document.querySelectorAll('#sym-chips .sc.on')].map(s => s.textContent).join(', ') || 'none reported';
+  const bp = document.getElementById('ci-bp').value || '128/84 (on file)';
+  const sugar = document.getElementById('ci-sugar').value || '108 mg/dL (on file)';
+  const chol = document.getElementById('ci-chol').value || '192 mg/dL (on file)';
+  const hr = document.getElementById('ci-hr').value || '74 bpm (on file)';
+  const extra = document.getElementById('ci-extra').value;
+  const msg = `Patient check-in:\n- Feeling: ${feel}\n- Symptoms: ${syms}\n- Blood pressure: ${bp}\n- Blood sugar: ${sugar}\n- Cholesterol: ${chol}\n- Heart rate: ${hr}\n- Known conditions: slightly elevated BP, pre-diabetic tendency, cholesterol history${extra ? '\n- Extra notes: ' + extra : ''}\n\nPlease provide personalized health advice.`;
+  const btn = document.getElementById('analyze-btn');
+  const box = document.getElementById('ai-result');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin"></div> Analyzing...';
+  box.innerHTML = '<div class="acard"><div class="a-think"><div class="spin"></div>Doc Doc is thinking...</div></div>';
+  try {
+    const text = await apiCall(SYS_CHECKIN, [{ role: 'user', content: msg }]);
+    box.innerHTML = parseCheckin(text);
+  } catch(e) {
+    box.innerHTML = `<div class="acard"><div class="a-think" style="color:var(--md-error)">Error: ${e.message}. Please try again.</div></div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Get AI health advice';
+}
+
+async function askMed() {
+  const name = document.getElementById('med-name').value.trim();
+  const q = document.getElementById('med-q').value.trim();
+  if (!name) { showSnack('Please enter a medicine name'); return; }
+  const prompt = `Medicine: ${name}\n${q ? 'Question: ' + q : 'Give a full overview: what it treats, dosage, side effects, and warnings.'}`;
+  const btn = document.getElementById('med-btn');
+  const box = document.getElementById('med-result');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin"></div> Looking up...';
+  box.innerHTML = '<div class="acard"><div class="a-think"><div class="spin"></div>Fetching info...</div></div>';
+  try {
+    const text = await apiCall(SYS_MED, [{ role: 'user', content: prompt }]);
+    box.innerHTML = `<div class="acard"><div class="acard-hdr"><span>💊</span><span>Medicine info</span></div><div class="acard-body"><div style="font-size:13px;line-height:1.65;color:var(--md-on-surface);font-family:var(--font-label)">${text}</div></div><div class="a-disc">⚠ Always follow your doctor's or pharmacist's specific instructions.</div></div>`;
+  } catch(e) {
+    box.innerHTML = `<div class="acard"><div class="a-think" style="color:var(--md-error)">Error: ${e.message}. Please try again.</div></div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> Ask Doc Doc';
+}
+
+const chatHist = [];
+async function sendChat() {
+  const inp = document.getElementById('chat-in');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="cb u">${txt}</div>`;
+  const tid = 'th' + Date.now();
+  msgs.innerHTML += `<div class="cb t" id="${tid}"><div class="spin"></div>Doc is thinking...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  chatHist.push({ role: 'user', content: txt });
+  try {
+    const reply = await apiCall(SYS_CHAT, [...chatHist]);
+    document.getElementById(tid)?.remove();
+    msgs.innerHTML += `<div class="cb d">${reply}</div>`;
+    chatHist.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    document.getElementById(tid)?.remove();
+    msgs.innerHTML += `<div class="cb d">Sorry, couldn't connect. Please try again. (${e.message})</div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function logReading() {
+  const bp = document.getElementById('log-bp').value;
+  const sugar = document.getElementById('log-sugar').value;
+  const chol = document.getElementById('log-chol').value;
+  const hr = document.getElementById('log-hr').value;
+  if (!bp && !sugar && !chol && !hr) { showSnack('Enter at least one reading'); return; }
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2,'0');
+  const mon = now.toLocaleString('en',{month:'short'});
+  const vals = [bp&&`BP: ${bp}`, sugar&&`Sugar: ${sugar}`, hr&&`HR: ${hr}`].filter(Boolean).join(' · ');
+  const sub = chol ? `Cholesterol: ${chol} mg/dL` : '&nbsp;';
+  document.getElementById('hist-list').insertAdjacentHTML('afterbegin',
+    `<div class="hi"><div class="hi-date"><span class="hi-day">${day}</span><span class="hi-mon">${mon}</span></div><div class="hi-data"><div class="hi-vals">${vals}</div><div class="hi-sub">${sub}</div></div><span class="badge b-ok">Logged</span></div>`);
+  ['log-bp','log-sugar','log-chol','log-hr'].forEach(id => document.getElementById(id).value = '');
+  showSnack('Reading saved!');
+}
+
+function selFeel(el) {
+  document.querySelectorAll('#feel-chips .fc').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+function showSnack(msg) {
+  const s = document.getElementById('snack');
+  s.textContent = msg; s.classList.add('show');
+  setTimeout(() => s.classList.remove('show'), 2800);
+}
+
+document.getElementById('chat-in').addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
+</script>
+</body>
+</html>
